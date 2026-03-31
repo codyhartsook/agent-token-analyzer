@@ -4,7 +4,7 @@ from a2a.types import AgentCard
 
 AGENT_CARD = AgentCard(
     name="TokenAnalysisAgent",
-    url="http://localhost:8883",
+    url="http://0.0.0.0:8883",
     description=(
         "Analyzes agent token usage, context windows, and costs from "
         "OpenTelemetry traces. Accepts natural language queries and returns "
