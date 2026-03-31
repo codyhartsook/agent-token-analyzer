@@ -1,0 +1,56 @@
+services:
+  token-analysis-agent:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: token-analysis-agent
+    ports:
+      - "${TOKEN_ANALYSIS_PORT:-8883}:8883"
+    env_file:
+      - .env
+    environment:
+      # Override DB_HOST to reach ClickHouse on the Docker network
+      - DB_HOST=${DB_HOST:-clickhouse}
+      - DB_PORT=${DB_PORT:-8123}
+      - TOKEN_ANALYSIS_PORT=8883
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8883/.well-known/agent.json')"]
+      interval: 30s
+      timeout: 5s
+      start_period: 10s
+      retries: 3
+    restart: unless-stopped
+    networks:
+      - agent-net
+
+  # Optional: local ClickHouse for development
+  clickhouse:
+    image: clickhouse/clickhouse-server:24.3
+    container_name: clickhouse
+    ports:
+      - "${DB_PORT:-8123}:8123"     # HTTP interface
+      - "9000:9000"                  # Native protocol
+    environment:
+      - CLICKHOUSE_USER=${DB_USERNAME:-admin}
+      - CLICKHOUSE_PASSWORD=${DB_PASSWORD:-admin}
+      - CLICKHOUSE_DB=${DB_DATABASE:-default}
+    volumes:
+      - clickhouse-data:/var/lib/clickhouse
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:8123/ping"]
+      interval: 15s
+      timeout: 3s
+      start_period: 20s
+      retries: 5
+    restart: unless-stopped
+    networks:
+      - agent-net
+    profiles:
+      - dev
+
+networks:
+  agent-net:
+    driver: bridge
+
+volumes:
+  clickhouse-data:
