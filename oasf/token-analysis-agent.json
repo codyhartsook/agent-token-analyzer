@@ -59,7 +59,7 @@
           "defaultInputModes": [
             "text"
           ],
-          "url": "http://localhost:8883",
+          "url": "http://0.0.0.0:8883",
           "signatures": null,
           "skills": [
             {

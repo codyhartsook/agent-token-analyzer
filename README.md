@@ -14,13 +14,13 @@ Ask questions in plain English and get back structured JSON:
 ## Architecture
 
 ```
-trace-context-analysis/
+agent-token-analyzer/
 ├── src/
 │   ├── token_analysis/      # Core library — ClickHouse queries, models, reports
 │   ├── agent/               # ADK agent with FunctionTools
 │   │   ├── agent.py         # Agent factory, session management, runner
 │   │   └── tools.py         # 4 tools wrapping the analysis library
-│   └── server/              # A2A server (HTTP, port 8882)
+│   └── server/              # A2A server (HTTP, port 8883)
 │       ├── card.py           # AgentCard definition
 │       ├── agent_executor.py # A2A ↔ ADK bridge
 │       ├── event_converter.py# ADK event → A2A event streaming
@@ -41,7 +41,7 @@ The agent imports the `token_analysis` library functions directly — no subproc
 ### Installation
 
 ```bash
-cd trace-context-analysis
+cd agent-token-analyzer
 
 # Install dependencies
 uv sync
@@ -75,13 +75,13 @@ Run the agent as an A2A protocol server:
 
 ```bash
 uv run python -m server.server
-# Starts on http://localhost:8882
+# Starts on http://localhost:8883
 ```
 
 Verify the agent card:
 
 ```bash
-curl http://localhost:8882/.well-known/agent.json
+curl http://localhost:8883/.well-known/agent.json
 ```
 
 ### CLI (still available)
